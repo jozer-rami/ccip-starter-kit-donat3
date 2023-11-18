@@ -2,6 +2,9 @@
   "name": "ccip-starter-kit-foundry",
   "devDependencies": {
     "@chainlink/contracts": "^0.6.1",
-    "@chainlink/contracts-ccip": "^0.7.3"
+    "@chainlink/contracts-ccip": "^0.7.3",
+    "@nomicfoundation/hardhat-foundry": "^1.1.1",
+    "@safe-global/safe-core-protocol": "0.2.0-alpha.1",
+    "hardhat": "^2.19.1"
   }
 }
