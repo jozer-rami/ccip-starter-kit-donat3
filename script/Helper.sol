@@ -8,7 +8,8 @@ contract Helper {
         OPTIMISM_GOERLI,
         AVALANCHE_FUJI,
         ARBITRUM_GOERLI,
-        POLYGON_MUMBAI
+        POLYGON_MUMBAI,
+        BASE_GOERLI
     }
 
     mapping(SupportedNetworks enumValue => string humanReadableName)
@@ -25,6 +26,8 @@ contract Helper {
     uint64 constant chainIdAvalancheFuji = 14767482510784806043;
     uint64 constant chainIdArbitrumTestnet = 6101244977088475029;
     uint64 constant chainIdPolygonMumbai = 12532609583862916517;
+    uint64 constant chainIdBaseGoerli = 5790810961207155433;
+
 
     // Router addresses
     address constant routerEthereumSepolia =
@@ -37,6 +40,8 @@ contract Helper {
         0x88E492127709447A5ABEFdaB8788a15B4567589E;
     address constant routerPolygonMumbai =
         0x70499c328e1E2a3c41108bd3730F6670a44595D1;
+    address constant routerBaseGoerli = 
+        0xA8C0c11bf64AF62CDCA6f93D3769B88BdD7cb93D;
 
     // Link addresses (can be used as fee)
     address constant linkEthereumSepolia =
@@ -49,6 +54,8 @@ contract Helper {
         0xd14838A68E8AFBAdE5efb411d5871ea0011AFd28;
     address constant linkPolygonMumbai =
         0x326C977E6efc84E512bB9C30f76E30c160eD06FB;
+    address constant linkBaseGoerli = 
+        0xD886E2286Fd1073df82462ea1822119600Af80b6;
 
     // Wrapped native addresses
     address constant wethEthereumSepolia =
@@ -61,7 +68,9 @@ contract Helper {
         0x32d5D5978905d9c6c2D4C417F0E06Fe768a4FB5a;
     address constant wmaticPolygonMumbai =
         0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889;
-
+    address constant wethBaseGoerli =
+        0x4200000000000000000000000000000000000006;
+    
     // CCIP-BnM addresses
     address constant ccipBnMEthereumSepolia =
         0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05;
@@ -73,6 +82,8 @@ contract Helper {
         0xD21341536c5cF5EB1bcb58f6723cE26e8D8E90e4;
     address constant ccipBnMPolygonMumbai =
         0xf1E3A5842EeEF51F2967b3F05D45DD4f4205FF40;
+    address constant ccipBnMBaseGoerli =
+        0xbf9036529123DE264bFA0FC7362fE25B650D4B16;
 
     // CCIP-LnM addresses
     address constant ccipLnMEthereumSepolia =
@@ -92,6 +103,7 @@ contract Helper {
         networks[SupportedNetworks.AVALANCHE_FUJI] = "Avalanche Fuji";
         networks[SupportedNetworks.ARBITRUM_GOERLI] = "Arbitrum Goerli";
         networks[SupportedNetworks.POLYGON_MUMBAI] = "Polygon Mumbai";
+        networks[SupportedNetworks.BASE_GOERLI] = "Base Goerli";
     }
 
     function getDummyTokensFromNetwork(
@@ -156,6 +168,13 @@ contract Helper {
                 linkPolygonMumbai,
                 wmaticPolygonMumbai,
                 chainIdPolygonMumbai
+            );
+        } else if (network == SupportedNetworks.BASE_GOERLI) {
+            return (
+                routerBaseGoerli,
+                linkBaseGoerli,
+                wethBaseGoerli,
+                chainIdBaseGoerli
             );
         }
     }

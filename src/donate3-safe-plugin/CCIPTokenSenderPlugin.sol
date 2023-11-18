@@ -5,7 +5,6 @@ import {ISafeProtocolManager} from "@safe-global/safe-core-protocol/contracts/in
 import {SafeTransaction, SafeProtocolAction} from "@safe-global/safe-core-protocol/contracts/DataTypes.sol";
 import {BasePluginWithEventMetadata, PluginMetadata} from "./Base.sol";
 // CCIP deps
-
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 import {IERC20} from "@chainlink/contracts-ccip/src/v0.8/vendor/openzeppelin-solidity/v4.8.0/token/ERC20/IERC20.sol";
 import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
@@ -13,21 +12,21 @@ import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.s
 import {Withdraw} from "../utils/Withdraw.sol";
 /**
  * @title OwnerManager
- * @dev This interface is defined for use in WhitelistPlugin contract.
+ * @dev This interface is defined for use in CCIPTokenSenderPlugin contract.
  */
 interface OwnerManager {
     function isOwner(address owner) external view returns (bool);
 }
 
 /**
- * @title WhitelistPlugin maintains a mapping that stores information about accounts that are
- *        permitted to execute non-root transactions through a Safe account.
+ * @title CCIPTokenSenderPlugin 
  * @notice This plugin does not need Safe owner(s) confirmation(s) to execute Safe txs once enabled
  *         through a Safe{Core} Protocol Manager.
  */
-contract WhitelistPlugin is BasePluginWithEventMetadata(
-            PluginMetadata({name: "Whitelist Plugin", version: "1.0.0", requiresRootAccess: false, iconUrl: "", appUrl: ""})
+contract CCIPTokenSenderPlugin is BasePluginWithEventMetadata(
+            PluginMetadata({name: "CCIPTokenSenderPlugin Plugin", version: "0.1.0", requiresRootAccess: false, iconUrl: "", appUrl: ""})
         ) {
+
     enum PayFeesIn {
         Native,
         LINK
@@ -50,16 +49,21 @@ contract WhitelistPlugin is BasePluginWithEventMetadata(
 
     receive() external payable {}
 
+    // TODO: Grant approvals to the CCIP router
+    //         Batch those 
+    //         Create SafeActions
+    //         Create message to router
+    //         Pay the fess from the safe
+
     /**
      * @notice Executes a Safe transaction if the caller is whitelisted for the given Safe account.
      * @param manager Address of the Safe{Core} Protocol Manager.
      * @param safe Safe account
-     * @param safetx SafeTransaction to be executed
      */
     function executeFromPlugin(
         ISafeProtocolManager manager,
         ISafe safe,
-        SafeTransaction calldata safetx
+        Client.EVMTokenAmount[] memory tokensToSendDetails
     ) external returns (bytes[] memory data) {
         address safeAddress = address(safe);
         // Only Safe owners are allowed to execute transactions
@@ -67,13 +71,12 @@ contract WhitelistPlugin is BasePluginWithEventMetadata(
             revert CallerIsNotOwner(safeAddress, msg.sender);
         }
 
-        // SafeProtocolAction[] memory actions = safetx.actions;
-        // uint256 length = actions.length;
-        // for (uint256 i = 0; i < length; i++) {
-        //     if (!whitelistedAddresses[safeAddress][actions[i].to]) revert AddressNotWhiteListed(actions[i].to);
-        // }
-        // // Test: Any tx that updates whitelist of this contract should be blocked
-        // (data) = manager.executeTransaction(safe, safetx);
+        SafeProtocolAction[] memory actions = createRouterApprovals(tokensToSendDetails);
+        SafeTransaction memory safetx;
+        safetx.actions=actions;
+
+        // Test: Any tx that updates whitelist of this contract should be blocked
+        (data) = manager.executeTransaction(safe, safetx);
 
         // TODO call send message CCIP
     }
@@ -84,34 +87,37 @@ contract WhitelistPlugin is BasePluginWithEventMetadata(
         tokens = IRouterClient(i_router).getSupportedTokens(chainSelector);
     }
 
-    function send(
-        uint64 destinationChainSelector,
-        address receiver,
-        Client.EVMTokenAmount[] memory tokensToSendDetails,
-        PayFeesIn payFeesIn
-    ) external {
+    // Encoding Safe Protocol Actions . Approve router spending
+    function createRouterApprovals(
+        Client.EVMTokenAmount[] memory tokensToSendDetails
+    ) internal view returns (SafeProtocolAction[] memory){
         uint256 length = tokensToSendDetails.length;
         require(
             length <= i_maxTokensLength,
             "Maximum 5 different tokens can be sent per CCIP Message"
         );
 
+        SafeProtocolAction[] memory safeActions = new SafeProtocolAction[](5);
+
         for (uint256 i = 0; i < length; ) {
-            IERC20(tokensToSendDetails[i].token).transferFrom(
-                msg.sender,
-                address(this),
-                tokensToSendDetails[i].amount
-            );
-            IERC20(tokensToSendDetails[i].token).approve(
-                i_router,
-                tokensToSendDetails[i].amount
-            );
+            safeActions[i].to = payable(tokensToSendDetails[i].token);
+            safeActions[i].value = 0;
+            safeActions[i].data = abi.encodeWithSignature("approve(address,uint256)", i_router, tokensToSendDetails[i].amount);
 
             unchecked {
                 ++i;
             }
         }
 
+        return safeActions;
+    }
+
+    function createCCIPsendAction(
+        uint64 destinationChainSelector,
+        address receiver,
+        Client.EVMTokenAmount[] memory tokensToSendDetails,
+        PayFeesIn payFeesIn
+    ) internal returns (SafeProtocolAction memory safeAction)  {
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
             data: "",
@@ -129,15 +135,22 @@ contract WhitelistPlugin is BasePluginWithEventMetadata(
 
         if (payFeesIn == PayFeesIn.LINK) {
             // LinkTokenInterface(i_link).approve(i_router, fee);
-            messageId = IRouterClient(i_router).ccipSend(
-                destinationChainSelector,
-                message
-            );
+            // messageId = IRouterClient(i_router).ccipSend(
+            //     destinationChainSelector,
+            //     message
+            // );
+            safeAction.to = payable(i_router);
+            safeAction.value = 0;
+            safeAction.data = abi.encodeWithSignature("ccipSend(uint64,bytes)",destinationChainSelector,message);
         } else {
-            messageId = IRouterClient(i_router).ccipSend{value: fee}(
-                destinationChainSelector,
-                message
-            );
+            // messageId = IRouterClient(i_router).ccipSend{value: fee}(
+            //     destinationChainSelector,
+            //     message
+            // );
+            safeAction.to = payable(i_router);
+            safeAction.value = fee;
+            safeAction.data = abi.encodeWithSignature("ccipSend(uint64,bytes)",destinationChainSelector,message);
+            
         }
 
         emit MessageSent(messageId);
