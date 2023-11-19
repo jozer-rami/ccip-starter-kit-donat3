@@ -94,7 +94,7 @@ contract CCIPTokenSenderPlugin is  BasePluginWithEventMetadata{
         uint64 destinationChainSelector,
         address receiver,
         Client.EVMTokenAmount[] memory tokensToSendDetails
-    ) internal view returns (SafeProtocolAction[] memory){
+    ) internal returns (SafeProtocolAction[] memory){
         uint256 length = tokensToSendDetails.length;
         require(
             length <= i_maxTokensLength,
