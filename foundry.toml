@@ -18,4 +18,9 @@ polygonMumbai = "${POLYGON_MUMBAI_RPC_URL}"
 baseGoerli = "${BASE_GOERLI_RPC_URL}"
 ethereumGoerli = "${ETHEREUM_GOERLI_RPC_URL}"
 
+[etherscan]
+mainnet = {key = "${ETHERSCAN_API_KEY}" }
+sepolia = {key = "${ETHERSCAN_API_KEY}" }
+base = {key = "${ETHERSCAN_API_KEY_BASE}"}
+baseGoerliScan = {key = "${ETHERSCAN_API_KEY_BASE}"}
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config

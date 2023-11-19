@@ -30,6 +30,14 @@ npm install
 forge build
 ```
 
+## Deploy own safe protocol (Manager + Registry)
+
+``` forge script script/SafeProtocol.s.sol:DeploySafeProtocol --broadcast -vvv --rpc-url ethereumSepolia --verify ```
+
+## Deploy CCIP Plugin
+
+``` forge script script/SafeSenderPlugin.s.sol:DeployCCIPTokenSenderPlugin -vvv --broadcast --rpc-url baseGoerli --sig "run(uint8)" -- 5 --verify ```
+
 ## What is Chainlink CCIP?
 
 **Chainlink Cross-Chain Interoperability Protocol (CCIP)** provides a single, simple, and elegant interface through which dApps and web3 entrepreneurs can securely meet all their cross-chain needs, including token transfers and arbitrary messaging.

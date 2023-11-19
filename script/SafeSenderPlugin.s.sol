@@ -32,11 +32,6 @@ contract DeployCCIPTokenSenderPlugin is Script, Helper {
     }
 }
 
-// TODO
-// contract Add Plugin to hardcoded safe Manager
-// Enable module contract call
-// Try 
-
 // command
 // forge script ./script/SafeSenderPlugin.s.sol:SafeExecuteApproval -vvv --broadcast --rpc-url ethereumSepolia --sig "run(uint8,address,address,(address,uint256)[])" -- 0 <PLUGIN> <SAFE> "[(0xD21341536c5cF5EB1bcb58f6723cE26e8D8E90e4,100),(0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846,100)]"
 
