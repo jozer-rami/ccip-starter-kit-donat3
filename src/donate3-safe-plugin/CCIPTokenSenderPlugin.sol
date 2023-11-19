@@ -49,12 +49,6 @@ contract CCIPTokenSenderPlugin is  BasePluginWithEventMetadata{
 
     receive() external payable {}
 
-    // TODO: Grant approvals to the CCIP router
-    //         Batch those 
-    //         Create SafeActions
-    //         Create message to router
-    //         Pay the fess from the safe
-
     /**
      * @notice Executes a Safe transaction if the caller is whitelisted for the given Safe account.
      * @param manager Address of the Safe{Core} Protocol Manager.

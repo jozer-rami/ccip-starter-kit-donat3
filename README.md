@@ -1,11 +1,5 @@
 ## Chainlink CCIP Starter Kit
 
-> **Note**
->
-> _This repository represents an example of using a Chainlink product or service. It is provided to help you understand how to interact with Chainlink’s systems so that you can integrate them into your own. This template is provided "AS IS" without warranties of any kind, has not been audited, and may be missing key checks or error handling to make the usage of the product more clear. Take everything in this repository as an example and not something to be copy pasted into a production ready service._
-
-This project demonstrates a couple of basic Chainlink CCIP use cases.
-
 ## Prerequisites
 
 - [Foundry](https://book.getfoundry.sh/getting-started/installation)
@@ -38,26 +32,6 @@ forge build
 
 ``` forge script script/SafeSenderPlugin.s.sol:DeployCCIPTokenSenderPlugin -vvv --broadcast --rpc-url baseGoerli --sig "run(uint8)" -- 5 --verify ```
 
-## What is Chainlink CCIP?
-
-**Chainlink Cross-Chain Interoperability Protocol (CCIP)** provides a single, simple, and elegant interface through which dApps and web3 entrepreneurs can securely meet all their cross-chain needs, including token transfers and arbitrary messaging.
-
-![basic-architecture](./img/basic-architecture.png)
-
-With Chainlink CCIP, one can:
-
-- Transfer supported tokens
-- Send messages (any data)
-- Send messages and tokens
-
-CCIP receiver can be:
-
-- Smart contract that implements `CCIPReceiver.sol`
-- EOA
-
-**Note**: If you send a message and token(s) to EOA, only tokens will arrive
-
-To use this project, you can consider CCIP as a "black-box" component and be aware of the Router contract only. If you want to dive deep into it, check the [Official Chainlink Documentation](https://docs.chain.link/ccip).
 
 ## Usage
 
@@ -72,46 +46,8 @@ OPTIMISM_GOERLI_RPC_URL=""
 AVALANCHE_FUJI_RPC_URL=""
 ARBITRUM_TESTNET_RPC_URL=""
 POLYGON_MUMBAI_RPC_URL=""
+GOERLI_BASE_RPC_URL=""
 ```
-
-Once that is done, to load the variables in the `.env` file, run the following command:
-
-```shell
-source .env
-```
-
-Make yourself familiar with the [`Helper.sol`](./script/Helper.sol) smart contract. It contains all the necessary Chainlink CCIP config. If you ever need to adjust any of those parameters, go to the Helper contract.
-
-This contract also contains some enums, like `SupportedNetworks`:
-
-```solidity
-enum SupportedNetworks {
-    ETHEREUM_SEPOLIA,   // 0
-    OPTIMISM_GOERLI,    // 1
-    AVALANCHE_FUJI,     // 2
-    ARBITRUM_GOERLI,    // 3
-    POLYGON_MUMBAI      // 4
-}
-```
-
-This means that if you want to perform some action from `AVALANCHE_FUJI` blockchain to `ETHEREUM_SEPOLIA` blockchain, for example, you will need to pass `2 (uint8)` as a source blockchain flag and `0 (uint8)` as a destination blockchain flag.
-
-Similarly, there is an `PayFeesIn` enum:
-
-```solidity
-enum PayFeesIn {
-    Native,  // 0
-    LINK     // 1
-}
-```
-
-So, if you want to pay for Chainlink CCIP fees in LINK token, you will pass `1 (uint8)` as a function argument.
-
-### Faucet
-
-You will need test tokens for some of the examples in this Starter Kit. Public faucets sometimes limit how many tokens a user can create and token pools might not have enough liquidity. To resolve these issues, CCIP supports two test tokens that you can mint permissionlessly so you don't run out of tokens while testing different scenarios.
-
-To get 10\*\*18 units of each of these tokens, use the `script/Faucet.s.sol` smart contract. Keep in mind that the `CCIP-BnM` test token you can mint on all testnets, while `CCIP-LnM` you can mint only on Ethereum Sepolia. On other testnets, the `CCIP-LnM` token representation is a wrapped/synthetic asset called `clCCIP-LnM`.
 
 ```solidity
 function run(SupportedNetworks network) external;

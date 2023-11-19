@@ -17,6 +17,7 @@ arbitrumTestnet = "${ARBITRUM_TESTNET_RPC_URL}"
 polygonMumbai = "${POLYGON_MUMBAI_RPC_URL}"
 baseGoerli = "${BASE_GOERLI_RPC_URL}"
 ethereumGoerli = "${ETHEREUM_GOERLI_RPC_URL}"
+scrollSepolia = "${SCROLL_SEPOLIA_RPC_URL}"
 
 [etherscan]
 mainnet = {key = "${ETHERSCAN_API_KEY}" }
