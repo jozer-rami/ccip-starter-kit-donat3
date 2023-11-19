@@ -16,5 +16,6 @@ avalancheFuji = "${AVALANCHE_FUJI_RPC_URL}"
 arbitrumTestnet = "${ARBITRUM_TESTNET_RPC_URL}"
 polygonMumbai = "${POLYGON_MUMBAI_RPC_URL}"
 baseGoerli = "${BASE_GOERLI_RPC_URL}"
+ethereumGoerli = "${ETHEREUM_GOERLI_RPC_URL}"
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config

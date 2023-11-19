@@ -9,7 +9,8 @@ contract Helper {
         AVALANCHE_FUJI,
         ARBITRUM_GOERLI,
         POLYGON_MUMBAI,
-        BASE_GOERLI
+        BASE_GOERLI,
+        ETHEREUM_GOERLI
     }
 
     mapping(SupportedNetworks enumValue => string humanReadableName)
@@ -104,12 +105,13 @@ contract Helper {
         networks[SupportedNetworks.ARBITRUM_GOERLI] = "Arbitrum Goerli";
         networks[SupportedNetworks.POLYGON_MUMBAI] = "Polygon Mumbai";
         networks[SupportedNetworks.BASE_GOERLI] = "Base Goerli";
+        networks[SupportedNetworks.ETHEREUM_GOERLI] = "Eth Goerli";
     }
 
     function getDummyTokensFromNetwork(
         SupportedNetworks network
     ) internal pure returns (address ccipBnM, address ccipLnM) {
-        if (network == SupportedNetworks.ETHEREUM_SEPOLIA) {
+        if (network == SupportedNetworks.ETHEREUM_SEPOLIA || network == SupportedNetworks.ETHEREUM_GOERLI) {
             return (ccipBnMEthereumSepolia, ccipLnMEthereumSepolia);
         } else if (network == SupportedNetworks.OPTIMISM_GOERLI) {
             return (ccipBnMOptimismGoerli, clCcipLnMOptimismGoerli);
